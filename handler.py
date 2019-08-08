@@ -5,8 +5,8 @@ import boto3
 
 bucket = 'form-data-detector'
 startAfter = 'data/train/Textbox'
-ACCESS_ID = 'AKIAV47NXBZLAV74SK66'
-ACCESS_KEY = 'Yihe/N3wA/G0PZzU30huGoBRBE1N6NUbG9Lv3qqR'
+ACCESS_ID = ''
+ACCESS_KEY = ''
 temp_path = '/tmp/83.JPG'
 s3 = boto3.resource('s3', region_name='ap-southeast-1',aws_access_key_id=ACCESS_ID, aws_secret_access_key= ACCESS_KEY)
 bucket_obj = s3.Bucket('form-data-detector')
