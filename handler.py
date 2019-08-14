@@ -5,9 +5,9 @@ import boto3
 
 bucket = 'form-data-detector'
 startAfter = 'data/train/Textbox'
-ACCESS_ID = ''
-ACCESS_KEY = ''
-temp_path = '/tmp/83.JPG'
+ACCESS_ID = 'AKIAV47NXBZLAV74SK66'
+ACCESS_KEY = 'Yihe/N3wA/G0PZzU30huGoBRBE1N6NUbG9Lv3qqR'
+temp_path = '/tmp/asdasd'
 s3 = boto3.resource('s3', region_name='ap-southeast-1',aws_access_key_id=ACCESS_ID, aws_secret_access_key= ACCESS_KEY)
 bucket_obj = s3.Bucket('form-data-detector')
 
@@ -26,20 +26,29 @@ def hello(event, context):
         if object['Key'].startswith(startAfter):
             print(object['Key'])
             object2 = bucket_obj.Object(object['Key'])
+            if 'marvin' in object['Key']:
+                print(object2)
             with open(temp_path, 'wb') as f:
                 object2.download_fileobj(f)
-                arr = []
-                img = cv2.imread(temp_path, cv2.IMREAD_COLOR)
-                if img is not None:
-                    img = cv2.resize(img, (256, 128))
-                    arr = img.reshape((1, 256, 128, 3))
-                    payload = json.dumps({'inputs_input': arr.tolist()})
-                    if object['Key'].startswith('data/train/Textbox/txt22.JPG'):
-                        print(payload)
-                    response = sagemaker_client.invoke_endpoint(EndpointName = 'sagemaker-tensorflow-2019-07-30-10-51-11-779', Body=payload, ContentType='application/json')
-                    result = json.loads(response['Body'].read().decode())
-                    print(result['outputs']['dense_2']['floatVal'])
-                    final_response[object['Key']] = result['outputs']['dense_2']['floatVal']
+            arr = []
+            img = cv2.imread(temp_path, cv2.IMREAD_COLOR)
+            print('showing image')
+            print(temp_path)
+            if img is not None:
+                img = cv2.resize(img, (256, 128))
+                arr = img.reshape((1, 256, 128, 3))
+                payload = json.dumps({'resnet50_input': arr.tolist()})
+                if 'marvinImg8' in object['Key']:
+                    print(payload)
+                response = sagemaker_client.invoke_endpoint(EndpointName = 'sagemaker-tensorflow-2019-08-14-06-23-58-220', Body=payload, ContentType='application/json')
+                print
+                if 'marvinImg8' in object['Key']:
+                    print('marvin images')
+                    print(response)
+                result = json.loads(response['Body'].read().decode())
+                print(result)
+                print(result['outputs']['dense']['floatVal'])
+                final_response[object['Key']] = np.around(result['outputs']['dense']['floatVal'], decimals=2)
 
     print(json.dumps(final_response))
     body = {
